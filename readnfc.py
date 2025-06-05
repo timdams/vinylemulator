@@ -13,18 +13,19 @@ def touched(tag):
     if tag.ndef:
         for record in tag.ndef.records:
             try:
+                print(f"Tag read {record.text}")
                 receivedtext = record.text
             except:
                 print("Error reading a *TEXT* tag from NFC.")
                 return True
-            
+
             receivedtext_lower = receivedtext.lower()
 
             print("")
             print("Read from NFC tag: "+ receivedtext)
 
             servicetype = ""
-            
+
             #check if a full HTTP URL read from NFC
             if receivedtext_lower.startswith ('http'):
                 servicetype = "completeurl"
@@ -38,11 +39,11 @@ def touched(tag):
             if receivedtext_lower.startswith ('tunein'):
                 servicetype = "tunein"
                 sonosinstruction = receivedtext
-            
+
             if receivedtext_lower.startswith ('favorite'):
                 servicetype = "favorite"
                 sonosinstruction = receivedtext
-            
+
             if receivedtext_lower.startswith ('amazonmusic:'):
                 servicetype = "amazonmusic"
                 sonosinstruction = "amazonmusic/now/" + receivedtext[12:]
@@ -63,7 +64,7 @@ def touched(tag):
             if receivedtext_lower.startswith ('command'):
                 servicetype = "command"
                 sonosinstruction = receivedtext[8:]
-            
+
             if receivedtext_lower.startswith ('room'):
                 servicetype = "room"
                 sonosroom_local = receivedtext[5:]
@@ -76,7 +77,7 @@ def touched(tag):
                 if usersettings.sendanonymoususagestatistics == "yes":
                     r = requests.post(appsettings.usagestatsurl, data = {'time': time.time(), 'value1': appsettings.appversion, 'value2': hex(uuid.getnode()), 'value3': 'invalid service type sent'})
                 return True
-            
+
             print ("Detected " + servicetype + " service request")
 
             #build the URL we want to request
@@ -84,7 +85,7 @@ def touched(tag):
                 urltoget = sonosinstruction
             else:
                 urltoget = usersettings.sonoshttpaddress + "/" + sonosroom_local + "/" + sonosinstruction
-            
+
             #check Sonos API is responding
             try:
                 r = requests.get(usersettings.sonoshttpaddress)
@@ -104,7 +105,7 @@ def touched(tag):
             if r.status_code != 200:
                 print ("Error code returned from Sonos API")
                 return True
-            
+
             print ("Sonos API reports " + r.json()['status'])
 
             #put together log data and send (if given permission)
