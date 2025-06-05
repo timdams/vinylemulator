@@ -35,7 +35,10 @@ def touched(tag):
             if receivedtext_lower.startswith ('spotify'):
                 servicetype = "spotify"
                 sonosinstruction = "spotify/now/" + receivedtext
-
+                if "playlist" in receivedtext-lower:
+                        shuffle = True
+                else:
+                        shuffle = False
             if receivedtext_lower.startswith ('tunein'):
                 servicetype = "tunein"
                 sonosinstruction = receivedtext
@@ -97,6 +100,16 @@ def touched(tag):
             if servicetype != "command":
                 print ("Clearing Sonos queue")
                 r = requests.get(usersettings.sonoshttpaddress + "/" + sonosroom_local + "/clearqueue")
+
+# Spotify shuffle gedrag instellen
+if servicetype == "spotify":
+    if shuffle:
+        print("Enabling shuffle for Spotify playlist")
+        r = requests.get(usersettings.sonoshttpaddress + "/" + sonosroom_local + "/shuffle/on")
+    else:
+        print("Disabling shuffle for Spotify (not a playlist)")
+        r = requests.get(usersettings.sonoshttpaddress + "/" + sonosroom_local + "/shuffle/off")
+
 
             #use the request function to get the URL built previously, triggering the sonos
             print ("Fetching URL via HTTP: "+ urltoget)
