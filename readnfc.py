@@ -9,6 +9,7 @@ import sys
 # this function gets called when a NFC tag is detected
 def touched(tag):
     global sonosroom_local
+    shuffle = False
 
     if tag.ndef:
         for record in tag.ndef.records:
@@ -67,6 +68,8 @@ def touched(tag):
             if receivedtext_lower.startswith ('command'):
                 servicetype = "command"
                 sonosinstruction = receivedtext[8:]
+                if "playlist" in receivedtext_lower:
+                    shuffle = True
 
             if receivedtext_lower.startswith ('room'):
                 servicetype = "room"
@@ -101,13 +104,13 @@ def touched(tag):
                 print ("Clearing Sonos queue")
                 r = requests.get(usersettings.sonoshttpaddress + "/" + sonosroom_local + "/clearqueue")
 
-            # Spotify shuffle gedrag instellen
-            if servicetype == "spotify":
-               if shuffle:
-                   print("Enabling shuffle for Spotify playlist")
+            #  shuffle gedrag instellen
+           
+            if shuffle:
+                   print("Enabling shuffle for  playlist")
                    r = requests.get(usersettings.sonoshttpaddress + "/" + sonosroom_local + "/shuffle/on")
-               else:
-                   print("Disabling shuffle for Spotify (not a playlist)")
+            else:
+                   print("Disabling shuffle for  (not a playlist)")
                    r = requests.get(usersettings.sonoshttpaddress + "/" + sonosroom_local + "/shuffle/off")
 
 
