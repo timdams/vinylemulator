@@ -1,4 +1,3 @@
-
 import time
 import nfc
 import requests
@@ -106,10 +105,12 @@ def touched(tag):
                 r = requests.get(usersettings.sonoshttpaddress + "/" + sonosroom_local + "/clearqueue")
 
             # volume instellen
+            current_hour = time.localtime().tm_hour
+            volume_level = 6 if 0 <= current_hour < 8 else 8
             time.sleep(0.1)
-            requests.get(usersettings.sonoshttpaddress + "/" + sonosroom_local + "/volume/8")
+            requests.get(usersettings.sonoshttpaddress + "/" + sonosroom_local + "/volume/"+volume_level)
             time.sleep(0.1)
-            requests.get(usersettings.sonoshttpaddress + "/tvkamer/volume/8")
+            requests.get(usersettings.sonoshttpaddress + "/tvkamer/volume/"+ volume_level)
 
 
 
